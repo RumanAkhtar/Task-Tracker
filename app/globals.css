@@ -1,0 +1,282 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated to vibrant neon color scheme */
+  --background: oklch(0.06 0 0);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.1 0.03 280);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.1 0.03 280);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.65 0.35 280); /* Neon Purple */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.58 0.35 320); /* Neon Pink */
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.25 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.72 0.3 200); /* Neon Cyan */
+  --accent-foreground: oklch(0.08 0 0);
+  --destructive: oklch(0.62 0.32 25); /* Neon Red */
+  --destructive-foreground: oklch(0.98 0 0);
+  --success: oklch(0.7 0.28 150); /* Neon Green */
+  --success-foreground: oklch(0.08 0 0);
+  --warning: oklch(0.75 0.32 70); /* Neon Yellow */
+  --warning-foreground: oklch(0.08 0 0);
+  --border: oklch(0.2 0.02 280);
+  --input: oklch(0.12 0.03 280);
+  --ring: oklch(0.65 0.35 280);
+  --chart-1: oklch(0.65 0.35 280);
+  --chart-2: oklch(0.58 0.35 320);
+  --chart-3: oklch(0.72 0.3 200);
+  --chart-4: oklch(0.62 0.32 25);
+  --chart-5: oklch(0.7 0.28 150);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.1 0.03 280);
+  --sidebar-foreground: oklch(0.98 0 0);
+  --sidebar-primary: oklch(0.65 0.35 280);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.2 0.02 280);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.2 0.02 280);
+  --sidebar-ring: oklch(0.65 0.35 280);
+}
+
+.dark {
+  --background: oklch(0.08 0 0);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.12 0.03 280);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.12 0.03 280);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.65 0.35 280);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.58 0.35 320);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.25 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.72 0.3 200);
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.62 0.32 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.2 0.02 280);
+  --input: oklch(0.12 0.03 280);
+  --ring: oklch(0.65 0.35 280);
+  --chart-1: oklch(0.65 0.35 280);
+  --chart-2: oklch(0.58 0.35 320);
+  --chart-3: oklch(0.72 0.3 200);
+  --chart-4: oklch(0.62 0.32 25);
+  --chart-5: oklch(0.7 0.28 150);
+  --sidebar: oklch(0.12 0.03 280);
+  --sidebar-foreground: oklch(0.98 0 0);
+  --sidebar-primary: oklch(0.65 0.35 280);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.2 0.02 280);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.2 0.02 280);
+  --sidebar-ring: oklch(0.65 0.35 280);
+}
+
+@theme inline {
+  --font-sans: "Geist", "Geist Fallback";
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Updated card-glass with neon glow effect */
+  .card-glass {
+    @apply rounded-xl border border-primary/30 bg-primary/5 backdrop-blur-xl p-6 shadow-2xl;
+    box-shadow: 0 0 30px rgba(102, 51, 153, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.05);
+  }
+
+  .card-glass:hover {
+    box-shadow: 0 0 40px rgba(102, 51, 153, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+
+  /* Enhanced gradient text with neon effect */
+  .gradient-text {
+    background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: neon-gradient 8s ease infinite;
+    text-shadow: 0 0 20px rgba(102, 51, 153, 0.5);
+  }
+
+  .gradient-primary-to-secondary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 0 20px rgba(102, 51, 153, 0.4);
+  }
+
+  .label-field {
+    @apply block text-sm font-medium text-foreground mb-2;
+  }
+
+  /* Enhanced input with neon border glow */
+  .input-field {
+    @apply w-full rounded-lg border border-primary/50 bg-input text-foreground placeholder-muted-foreground px-4 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/40 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 0 15px rgba(102, 51, 153, 0.1);
+  }
+
+  .input-field:focus {
+    box-shadow: inset 0 0 15px rgba(102, 51, 153, 0.2), 0 0 20px rgba(102, 51, 153, 0.3);
+  }
+
+  /* Added neon glow effect */
+  .shadow-glow {
+    @apply shadow-lg;
+    box-shadow: 0 0 25px rgba(102, 51, 153, 0.4), 0 0 50px rgba(102, 51, 153, 0.2);
+  }
+
+  .neon-glow-primary {
+    box-shadow: 0 0 20px rgba(102, 51, 153, 0.5);
+  }
+
+  .neon-glow-secondary {
+    box-shadow: 0 0 20px rgba(255, 100, 180, 0.5);
+  }
+
+  .neon-glow-accent {
+    box-shadow: 0 0 20px rgba(100, 200, 255, 0.5);
+  }
+}
+
+@layer utilities {
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Added neon glow animation */
+  @keyframes neonGlow {
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(102, 51, 153, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(102, 51, 153, 0.8);
+    }
+  }
+
+  @keyframes neon-gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes pulseGlow {
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 3s ease-in-out infinite;
+  }
+
+  /* Added neon glow animation utility */
+  .animate-neon-glow {
+    animation: neonGlow 2s ease-in-out infinite;
+  }
+
+  .hover\:scale-102:hover {
+    transform: scale(1.02);
+  }
+}
