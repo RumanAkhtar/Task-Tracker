@@ -20,9 +20,9 @@ export default function ToastItem({ toast, onRemove }: ToastItemProps) {
   }
 
   const icons = {
-    success: <Check className="w-5 h-5" />,
-    error: <AlertCircle className="w-5 h-5" />,
-    info: <Info className="w-5 h-5" />,
+    success: <Check className="w-5 h-5" aria-hidden="true" />,
+    error: <AlertCircle className="w-5 h-5" aria-hidden="true" />,
+    info: <Info className="w-5 h-5" aria-hidden="true" />,
   }
 
   const variantClasses = {
@@ -33,20 +33,34 @@ export default function ToastItem({ toast, onRemove }: ToastItemProps) {
 
   return (
     <div
-      className={`pointer-events-auto card-glass border ${variantClasses[toast.variant]} flex items-start gap-3 min-w-80 max-w-md animate-slide-in ${
+      role="alert"
+      className={`pointer-events-auto card-glass border ${
+        variantClasses[toast.variant]
+      } flex min-w-80 max-w-md items-start gap-3 animate-slide-in ${
         isExiting ? "animate-slide-up opacity-0" : ""
       }`}
     >
-      <div className="flex-shrink-0 mt-0.5">{icons[toast.variant]}</div>
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-sm">{toast.title}</h3>
-        {toast.description && <p className="text-xs text-muted-foreground mt-1">{toast.description}</p>}
+      <div className="mt-0.5 shrink-0">
+        {icons[toast.variant]}
       </div>
+
+      <div className="min-w-0 flex-1">
+        <h3 className="text-sm font-semibold">{toast.title}</h3>
+        {toast.description && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            {toast.description}
+          </p>
+        )}
+      </div>
+
       <button
+        type="button"
         onClick={handleClose}
-        className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-all duration-300 ease-out"
+        aria-label="Close notification"
+        title="Close notification"
+        className="shrink-0 text-muted-foreground transition hover:text-foreground"
       >
-        <X className="w-4 h-4" />
+        <X className="h-4 w-4" aria-hidden="true" />
       </button>
     </div>
   )

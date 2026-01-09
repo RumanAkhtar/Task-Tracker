@@ -17,28 +17,32 @@ interface TaskFiltersProps {
   onChange: (filters: TaskFilters) => void
 }
 
-const STATUS_OPTIONS: { label: string; value?: TaskStatus }[] = [
-  { label: "All", value: undefined },
+/* Select options MUST use string values */
+const STATUS_OPTIONS = [
+  { label: "All", value: "" },
   { label: "Pending", value: "Pending" },
   { label: "Completed", value: "Completed" },
 ]
 
-const PRIORITY_OPTIONS: { label: string; value?: TaskPriority }[] = [
-  { label: "All", value: undefined },
+const PRIORITY_OPTIONS = [
+  { label: "All", value: "" },
   { label: "Low", value: "Low" },
   { label: "Medium", value: "Medium" },
   { label: "High", value: "High" },
 ]
 
-const SORT_OPTIONS: { label: string; value: TaskSortBy }[] = [
+const SORT_OPTIONS = [
   { label: "Due Date", value: "dueDate" },
   { label: "Priority", value: "priority" },
   { label: "Created", value: "createdAt" },
 ]
 
-export default function TaskFilters({ filters, onChange }: TaskFiltersProps) {
+export default function TaskFilters({
+  filters,
+  onChange,
+}: TaskFiltersProps) {
   const hasActiveFilters =
-    filters.status || filters.priority || filters.search
+    !!filters.status || !!filters.priority || !!filters.search
 
   return (
     <Card className="space-y-4 animate-slide-in">
@@ -64,11 +68,13 @@ export default function TaskFilters({ filters, onChange }: TaskFiltersProps) {
         <Select
           label="Status"
           options={STATUS_OPTIONS}
-          value={filters.status}
+          value={filters.status ?? ""}
           onChange={(e) =>
             onChange({
               ...filters,
-              status: e.target.value as TaskStatus | undefined,
+              status: e.target.value
+                ? (e.target.value as TaskStatus)
+                : undefined,
             })
           }
         />
@@ -76,11 +82,13 @@ export default function TaskFilters({ filters, onChange }: TaskFiltersProps) {
         <Select
           label="Priority"
           options={PRIORITY_OPTIONS}
-          value={filters.priority}
+          value={filters.priority ?? ""}
           onChange={(e) =>
             onChange({
               ...filters,
-              priority: e.target.value as TaskPriority | undefined,
+              priority: e.target.value
+                ? (e.target.value as TaskPriority)
+                : undefined,
             })
           }
         />

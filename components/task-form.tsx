@@ -8,103 +8,102 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useToast } from "@/components/toast-provider"
 import { Plus } from "lucide-react"
-
-export interface TaskFormData {
-  title: string
-  description: string
-  priority: "Low" | "Medium" | "High"
-  dueDate: string
-  status: "Pending" | "Completed"
-}
+import type { CreateTaskDTO, TaskPriority, TaskStatus } from "@/lib/types"
 
 interface TaskFormProps {
-  onSubmit: (data: TaskFormData) => void
+  onSubmit: (data: CreateTaskDTO) => void
   isLoading?: boolean
 }
 
-const PRIORITY_OPTIONS = [
+type FormErrors = Partial<Record<keyof CreateTaskDTO, string>>
+
+const PRIORITY_OPTIONS: { label: string; value: TaskPriority }[] = [
   { label: "Low", value: "Low" },
   { label: "Medium", value: "Medium" },
   { label: "High", value: "High" },
 ]
 
-const STATUS_OPTIONS = [
+const STATUS_OPTIONS: { label: string; value: TaskStatus }[] = [
   { label: "Pending", value: "Pending" },
   { label: "Completed", value: "Completed" },
 ]
 
-export default function TaskForm({ onSubmit, isLoading = false }: TaskFormProps) {
-  const { addToast } = useToast()
-  const [errors, setErrors] = useState<Partial<Record<keyof TaskFormData, string>>>({})
-  const [formData, setFormData] = useState<TaskFormData>({
-    title: "",
-    description: "",
-    priority: "Medium",
-    dueDate: "",
-    status: "Pending",
-  })
+const INITIAL_FORM_STATE: CreateTaskDTO = {
+  title: "",
+  description: "",
+  priority: "Medium",
+  dueDate: "",
+  status: "Pending",
+}
 
-  const validateForm = () => {
-    const newErrors: Partial<Record<keyof TaskFormData, string>> = {}
+export default function TaskForm({
+  onSubmit,
+  isLoading = false,
+}: TaskFormProps) {
+  const { addToast } = useToast()
+  const [formData, setFormData] =
+    useState<CreateTaskDTO>(INITIAL_FORM_STATE)
+  const [errors, setErrors] = useState<FormErrors>({})
+
+  const validate = (): boolean => {
+    const nextErrors: FormErrors = {}
 
     if (!formData.title.trim()) {
-      newErrors.title = "Title is required"
+      nextErrors.title = "Title is required"
     }
 
     if (!formData.dueDate) {
-      newErrors.dueDate = "Due date is required"
+      nextErrors.dueDate = "Due date is required"
     } else {
-      const selectedDate = new Date(formData.dueDate)
+      const selected = new Date(formData.dueDate)
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-      if (selectedDate < today) {
-        newErrors.dueDate = "Due date cannot be in the past"
+
+      if (selected < today) {
+        nextErrors.dueDate = "Due date cannot be in the past"
       }
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    setErrors(nextErrors)
+    return Object.keys(nextErrors).length === 0
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }))
-    if (errors[name as keyof TaskFormData]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: undefined,
-      }))
+
+    if (errors[name as keyof CreateTaskDTO]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }))
     }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!validateForm()) {
+    if (!validate()) {
       addToast({
         title: "Validation Error",
-        description: "Please fill in all required fields correctly",
+        description: "Please correct the highlighted fields",
         variant: "error",
       })
       return
     }
 
     onSubmit(formData)
-    setFormData({
-      title: "",
-      description: "",
-      priority: "Medium",
-      dueDate: "",
-      status: "Pending",
-    })
+    setFormData(INITIAL_FORM_STATE)
     setErrors({})
 
     addToast({
-      title: "Success",
-      description: "Task created successfully",
+      title: "Task Created",
+      description: "Your task has been added successfully",
       variant: "success",
     })
   }
@@ -112,8 +111,12 @@ export default function TaskForm({ onSubmit, isLoading = false }: TaskFormProps)
   return (
     <Card className="animate-slide-in">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold gradient-text">Create New Task</h2>
-        <p className="text-muted-foreground text-sm mt-1">Add a new task to your list</p>
+        <h2 className="text-2xl font-bold gradient-text">
+          Create New Task
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Add a new task to your list
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -128,14 +131,16 @@ export default function TaskForm({ onSubmit, isLoading = false }: TaskFormProps)
         />
 
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Description</label>
+          <label className="mb-2 block text-sm font-medium">
+            Description
+          </label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Add task description (optional)..."
+            placeholder="Optional task description..."
             disabled={isLoading}
-            className="w-full rounded-lg border border-border bg-input text-foreground placeholder-muted-foreground px-4 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            className="w-full rounded-lg border border-border bg-input px-4 py-2.5 text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition"
           />
         </div>
 
@@ -148,6 +153,7 @@ export default function TaskForm({ onSubmit, isLoading = false }: TaskFormProps)
             options={PRIORITY_OPTIONS}
             disabled={isLoading}
           />
+
           <Input
             label="Due Date"
             name="dueDate"
@@ -169,7 +175,7 @@ export default function TaskForm({ onSubmit, isLoading = false }: TaskFormProps)
         />
 
         <Button type="submit" isLoading={isLoading} className="w-full">
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           Create Task
         </Button>
       </form>
