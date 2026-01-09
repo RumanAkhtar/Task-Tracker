@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "Task Tracker - Organize Your Daily Tasks",
   description:
     "A modern task tracking application with advanced filtering, sorting, and beautiful glassmorphism design",
-  generator: "v0.app",
+  
   icons: {
     icon: [
       {
