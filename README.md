@@ -89,7 +89,7 @@ MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/tasktracker
 
 📦 Installation & Setup
 1️⃣ Clone the Repository
-git clone https://github.com/your-username/task-tracker-web-application.git
+git clone https://github.com/RumanAkhtar/Task-Tracker.git
 cd task-tracker-web-application
 
 2️⃣ Install Dependencies (pnpm)
