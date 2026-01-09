@@ -1,22 +1,34 @@
 import { NextResponse } from "next/server"
 import { connectDB } from "@/lib/mongodb"
 import { Task } from "@/models/Task"
+import mongoose from "mongoose"
 
-interface Params {
-  params: {
+interface RouteContext {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 /* ---------- UPDATE TASK ---------- */
-export async function PUT(req: Request, { params }: Params) {
+export async function PUT(
+  req: Request,
+  context: RouteContext
+) {
   try {
+    const { id } = await context.params
     await connectDB()
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { message: "Invalid task ID" },
+        { status: 400 }
+      )
+    }
 
     const body = await req.json()
 
     const updatedTask = await Task.findByIdAndUpdate(
-      params.id,
+      id,
       body,
       { new: true, runValidators: true }
     )
@@ -28,7 +40,7 @@ export async function PUT(req: Request, { params }: Params) {
       )
     }
 
-    return NextResponse.json(updatedTask)
+    return NextResponse.json(updatedTask, { status: 200 })
   } catch (error) {
     console.error("PUT /api/tasks/[id] error:", error)
     return NextResponse.json(
@@ -41,12 +53,22 @@ export async function PUT(req: Request, { params }: Params) {
 /* ---------- DELETE TASK ---------- */
 export async function DELETE(
   _req: Request,
-  { params }: Params
+  context: RouteContext
 ) {
   try {
+    const { id } = await context.params
     await connectDB()
 
-    const deletedTask = await Task.findByIdAndDelete(params.id)
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { message: "Invalid task ID" },
+        { status: 400 }
+      )
+    }
+
+    console.log("Deleting task:", id)
+
+    const deletedTask = await Task.findByIdAndDelete(id)
 
     if (!deletedTask) {
       return NextResponse.json(
@@ -55,7 +77,10 @@ export async function DELETE(
       )
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json(
+      { success: true },
+      { status: 200 }
+    )
   } catch (error) {
     console.error("DELETE /api/tasks/[id] error:", error)
     return NextResponse.json(

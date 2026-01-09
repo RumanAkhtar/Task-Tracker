@@ -5,43 +5,75 @@ import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/components/toast-provider"
-import { Trash2, CheckCircle2, Circle, Calendar } from "lucide-react"
-import type { Task, TaskStatus } from "../lib/types"
+import {
+  Trash2,
+  CheckCircle2,
+  Circle,
+  Calendar,
+} from "lucide-react"
+import type { Task, TaskStatus } from "@/lib/types"
 
 interface TaskCardProps {
   task: Task
-  onStatusChange: (id: string, status: TaskStatus) => void
-  onDelete: (id: string) => void
+  onStatusChange: (
+    id: string,
+    status: TaskStatus
+  ) => Promise<void>
+  onDelete: (id: string) => Promise<boolean>
 }
 
-export default function TaskCard({ task, onStatusChange, onDelete }: TaskCardProps) {
+export default function TaskCard({
+  task,
+  onStatusChange,
+  onDelete,
+}: TaskCardProps) {
   const { addToast } = useToast()
   const [isHovered, setIsHovered] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
-  const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
     })
 
   const isOverdue =
-    task.status !== "Completed" && new Date(task.dueDate) < new Date()
+    task.status !== "Completed" &&
+    new Date(task.dueDate) < new Date()
 
-  const handleDelete = () => {
-    onDelete(task._id)
-    addToast({
-      title: "Task Deleted",
-      description: "Task has been removed from your list",
-      variant: "success",
-    })
+  /* ---------- Delete ---------- */
+  const handleDelete = async () => {
+    if (isDeleting) return
+    setIsDeleting(true)
+
+    const success = await onDelete(task._id)
+
+    if (success) {
+      addToast({
+        title: "Task Deleted",
+        description: "Task has been permanently removed",
+        variant: "success",
+      })
+    } else {
+      addToast({
+        title: "Delete Failed",
+        description: "Unable to delete task. Please try again.",
+        variant: "error",
+      })
+    }
+
+    setIsDeleting(false)
   }
 
-  const handleStatusToggle = () => {
+  /* ---------- Status Toggle ---------- */
+  const handleStatusToggle = async () => {
     const newStatus: TaskStatus =
-      task.status === "Pending" ? "Completed" : "Pending"
+      task.status === "Pending"
+        ? "Completed"
+        : "Pending"
 
-    onStatusChange(task._id, newStatus)
+    await onStatusChange(task._id, newStatus)
 
     addToast({
       title: "Task Updated",
@@ -70,15 +102,17 @@ export default function TaskCard({ task, onStatusChange, onDelete }: TaskCardPro
         <div className="flex gap-4">
           {/* Status Toggle */}
           <motion.button
+            type="button"
             onClick={handleStatusToggle}
             className="mt-1 text-muted-foreground hover:text-primary"
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.9 }}
+            aria-label="Toggle task status"
           >
             {task.status === "Completed" ? (
-              <CheckCircle2 className="w-6 h-6 text-success" />
+              <CheckCircle2 className="h-6 w-6 text-success" />
             ) : (
-              <Circle className="w-6 h-6" />
+              <Circle className="h-6 w-6" />
             )}
           </motion.button>
 
@@ -109,9 +143,9 @@ export default function TaskCard({ task, onStatusChange, onDelete }: TaskCardPro
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+            <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="w-4 h-4" />
+                <Calendar className="h-4 w-4" />
                 {formatDate(task.dueDate)}
                 {isOverdue && (
                   <span className="ml-1 text-xs text-destructive">
@@ -121,16 +155,21 @@ export default function TaskCard({ task, onStatusChange, onDelete }: TaskCardPro
               </div>
 
               <motion.button
+                type="button"
                 onClick={handleDelete}
-                className={`p-2 rounded-lg ${
+                disabled={isDeleting}
+                aria-label="Delete task"
+                className={`rounded-lg p-2 transition ${
                   isHovered
                     ? "bg-destructive/20 text-destructive"
                     : "text-muted-foreground"
+                } ${
+                  isDeleting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
               </motion.button>
             </div>
           </div>

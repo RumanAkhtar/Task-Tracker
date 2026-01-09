@@ -16,11 +16,14 @@ export default function Home() {
     const fetchTasks = async () => {
       try {
         const res = await fetch("/api/tasks")
-        if (!res.ok) throw new Error("Failed to fetch tasks")
+        if (!res.ok) {
+          throw new Error("Failed to fetch tasks")
+        }
+
         const data: Task[] = await res.json()
         setTasks(data)
       } catch (error) {
-        console.error(error)
+        console.error("Fetch tasks error:", error)
       }
     }
 
@@ -28,7 +31,9 @@ export default function Home() {
   }, [])
 
   /* ---------- Create Task ---------- */
-  const handleCreateTask = async (data: CreateTaskDTO) => {
+  const handleCreateTask = async (
+    data: CreateTaskDTO
+  ): Promise<void> => {
     try {
       setIsLoading(true)
 
@@ -38,12 +43,14 @@ export default function Home() {
         body: JSON.stringify(data),
       })
 
-      if (!res.ok) throw new Error("Failed to create task")
+      if (!res.ok) {
+        throw new Error("Failed to create task")
+      }
 
       const newTask: Task = await res.json()
       setTasks((prev) => [newTask, ...prev])
     } catch (error) {
-      console.error(error)
+      console.error("Create task error:", error)
     } finally {
       setIsLoading(false)
     }
@@ -53,13 +60,17 @@ export default function Home() {
   const handleStatusChange = async (
     id: string,
     status: TaskStatus
-  ) => {
+  ): Promise<void> => {
     try {
-      await fetch(`/api/tasks/${id}`, {
+      const res = await fetch(`/api/tasks/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       })
+
+      if (!res.ok) {
+        throw new Error("Failed to update task")
+      }
 
       setTasks((prev) =>
         prev.map((task) =>
@@ -67,20 +78,31 @@ export default function Home() {
         )
       )
     } catch (error) {
-      console.error(error)
+      console.error("Update task error:", error)
     }
   }
 
   /* ---------- Delete Task ---------- */
-  const handleDeleteTask = async (id: string) => {
+  const handleDeleteTask = async (
+    id: string
+  ): Promise<boolean> => {
     try {
-      await fetch(`/api/tasks/${id}`, {
+      const res = await fetch(`/api/tasks/${id}`, {
         method: "DELETE",
       })
 
-      setTasks((prev) => prev.filter((task) => task._id !== id))
+      if (!res.ok) {
+        return false
+      }
+
+      setTasks((prev) =>
+        prev.filter((task) => task._id !== id)
+      )
+
+      return true
     } catch (error) {
-      console.error(error)
+      console.error("Delete task error:", error)
+      return false
     }
   }
 
@@ -121,7 +143,7 @@ export default function Home() {
             </h1>
           </div>
           <p className="mt-2 text-lg text-muted-foreground">
-            Organize, prioritize, and track your daily tasks with ease
+            Organize, prioritize, and track your daily tasks
           </p>
         </motion.div>
 
@@ -140,7 +162,7 @@ export default function Home() {
             />
           </motion.div>
 
-          {/* Tasks */}
+          {/* Task List */}
           <motion.div
             className="lg:col-span-2"
             initial={{ opacity: 0, x: 20 }}

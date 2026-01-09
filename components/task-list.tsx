@@ -18,6 +18,12 @@ const INITIAL_FILTERS: Filters = {
   sortBy: "dueDate",
 }
 
+const PRIORITY_ORDER: Record<string, number> = {
+  High: 0,
+  Medium: 1,
+  Low: 2,
+}
+
 export default function TaskList({
   tasks,
   onStatusChange,
@@ -25,37 +31,36 @@ export default function TaskList({
 }: TaskListProps) {
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS)
 
-  /* ---------- Filter + Sort ---------- */
+  /* ---------- Filter & Sort Tasks ---------- */
   const filteredTasks = useMemo(() => {
     let result = [...tasks]
 
     if (filters.status) {
-      result = result.filter((t) => t.status === filters.status)
+      result = result.filter((task) => task.status === filters.status)
     }
 
     if (filters.priority) {
-      result = result.filter((t) => t.priority === filters.priority)
+      result = result.filter(
+        (task) => task.priority === filters.priority
+      )
     }
 
     if (filters.search) {
       const term = filters.search.toLowerCase()
       result = result.filter(
-        (t) =>
-          t.title.toLowerCase().includes(term) ||
-          t.description?.toLowerCase().includes(term)
+        (task) =>
+          task.title.toLowerCase().includes(term) ||
+          task.description?.toLowerCase().includes(term)
       )
-    }
-
-    const priorityOrder: Record<string, number> = {
-      High: 0,
-      Medium: 1,
-      Low: 2,
     }
 
     result.sort((a, b) => {
       switch (filters.sortBy) {
         case "priority":
-          return priorityOrder[a.priority] - priorityOrder[b.priority]
+          return (
+            PRIORITY_ORDER[a.priority] -
+            PRIORITY_ORDER[b.priority]
+          )
         case "createdAt":
           return (
             new Date(b.createdAt).getTime() -
@@ -76,7 +81,7 @@ export default function TaskList({
   /* ---------- Stats ---------- */
   const stats = useMemo(() => {
     const completed = tasks.filter(
-      (t) => t.status === "Completed"
+      (task) => task.status === "Completed"
     ).length
 
     return {
@@ -88,7 +93,7 @@ export default function TaskList({
 
   return (
     <div className="grid gap-6 lg:grid-cols-4">
-      {/* Filters */}
+      {/* Filters + Overview */}
       <div className="lg:col-span-1">
         <TaskFilters filters={filters} onChange={setFilters} />
 
@@ -166,7 +171,7 @@ export default function TaskList({
             }}
           >
             {filteredTasks.map((task) => (
-              /* ✅ Key is on a stable wrapper */
+              /* ✅ Stable wrapper fixes React key warning */
               <div key={task._id}>
                 <motion.div
                   variants={{
